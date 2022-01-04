@@ -1,0 +1,47 @@
+using UnityEngine;
+using Random = UnityEngine.Random;
+
+public class SpawnManager : MonoBehaviour
+{
+    public GameObject enemyPrefab;
+    public GameObject powerUpPrefab;
+    private const float SpawnRange = 9.0f;
+    private static int _enemyCount = 1;
+    public int waveNumber = 1;
+
+    public void Start()
+    {
+        Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
+        SpawnEnemyWave(waveNumber);
+    }
+
+    private void FixedUpdate()
+    {
+        _enemyCount = FindObjectsOfType<EnemyController>().Length;
+
+        if (_enemyCount == 0)
+        {
+            // The number of enemies spawned increases after every wave is defeated
+            waveNumber++;
+            SpawnEnemyWave(waveNumber);
+
+            // A new power up spawns with every wave
+            Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
+        }
+    }
+
+    private void SpawnEnemyWave(int enemiesToSpawn)
+    {
+        for (var i = 0; i < enemiesToSpawn; i++)
+        {
+            Instantiate(enemyPrefab, GenerateRandomSpawnPosition(), enemyPrefab.transform.rotation);
+        }
+    }
+
+    private static Vector3 GenerateRandomSpawnPosition()
+    {
+        var spawnPosX = Random.Range(-SpawnRange, SpawnRange);
+        var spawnPosY = Random.Range(-SpawnRange, SpawnRange);
+        return new Vector3(spawnPosX, 0, spawnPosY);
+    }
+}
