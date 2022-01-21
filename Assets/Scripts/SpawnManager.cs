@@ -4,7 +4,9 @@ using Random = UnityEngine.Random;
 public class SpawnManager : MonoBehaviour
 {
     public GameObject enemyPrefab;
+    public GameObject enemyPrefabMedium;
     public GameObject powerUpPrefab;
+
     private const float SpawnRange = 9.0f;
     private static int _enemyCount = 1;
     public int waveNumber = 1;
@@ -25,7 +27,7 @@ public class SpawnManager : MonoBehaviour
             waveNumber++;
             SpawnEnemyWave(waveNumber);
 
-            // A new power up spawns with every wave
+            // A new powerUp spawns with every wave
             Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
         }
     }
@@ -34,7 +36,19 @@ public class SpawnManager : MonoBehaviour
     {
         for (var i = 0; i < enemiesToSpawn; i++)
         {
-            Instantiate(enemyPrefab, GenerateRandomSpawnPosition(), enemyPrefab.transform.rotation);
+            var enemyDifficulty = Random.Range(0, 3);
+
+            // Randomly instantiate enemy with increased difficulty after second wave
+            if (waveNumber > 2 && enemyDifficulty == 2)
+            {
+                enemyPrefabMedium.GetComponent<EnemyController>().speed = 7f;
+                Instantiate(enemyPrefabMedium, GenerateRandomSpawnPosition(), enemyPrefabMedium.transform.rotation);
+            }
+            else
+            {
+                enemyPrefab.GetComponent<EnemyController>().speed = 5f;
+                Instantiate(enemyPrefab, GenerateRandomSpawnPosition(), enemyPrefab.transform.rotation);
+            }
         }
     }
 
