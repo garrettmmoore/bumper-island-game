@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -6,6 +7,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject enemyPrefab;
     public GameObject enemyPrefabMedium;
     public GameObject powerUpPrefab;
+    public GameObject powerUpVariantPrefab;
 
     private const float SpawnRange = 9.0f;
     private static int _enemyCount = 1;
@@ -27,8 +29,18 @@ public class SpawnManager : MonoBehaviour
             waveNumber++;
             SpawnEnemyWave(waveNumber);
 
-            // A new powerUp spawns with every wave
-            Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
+            var powerUpSelection = Random.Range(0, 1);
+
+            if (powerUpSelection == 1)
+            {
+                // A new powerUp spawns with every wave
+                Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
+            }
+            else
+            {
+                // A new powerUpVariant spawns
+                Instantiate(powerUpVariantPrefab, GenerateRandomSpawnPosition(), powerUpVariantPrefab.transform.rotation);
+            }
         }
     }
 
