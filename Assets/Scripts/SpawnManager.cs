@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,6 +7,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject enemyPrefabMedium;
     public GameObject powerUpPrefab;
     public GameObject powerUpVariantPrefab;
+    private GameObject _player;
 
     private const float SpawnRange = 9.0f;
     private static int _enemyCount = 1;
@@ -15,6 +15,7 @@ public class SpawnManager : MonoBehaviour
 
     public void Start()
     {
+        _player = GameObject.Find("Player");
         Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
         SpawnEnemyWave(waveNumber);
     }
@@ -28,19 +29,24 @@ public class SpawnManager : MonoBehaviour
             // The number of enemies spawned increases after every wave is defeated
             waveNumber++;
             SpawnEnemyWave(waveNumber);
+            SpawnPowerUpIndicator();
+        }
+    }
 
-            var powerUpSelection = Random.Range(0, 1);
+    private void SpawnPowerUpIndicator()
+    {
+        _player.GetComponent<PlayerController>().powerUpType = Random.Range(0, 2);
+        var powerUpSelection = _player.GetComponent<PlayerController>().powerUpType;
 
-            if (powerUpSelection == 1)
-            {
-                // A new powerUp spawns with every wave
-                Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
-            }
-            else
-            {
-                // A new powerUpVariant spawns
-                Instantiate(powerUpVariantPrefab, GenerateRandomSpawnPosition(), powerUpVariantPrefab.transform.rotation);
-            }
+        if (powerUpSelection == 1)
+        {
+            // A new powerUp spawns with every wave
+            Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
+        }
+        else
+        {
+            // A new powerUpVariant spawns
+            Instantiate(powerUpVariantPrefab, GenerateRandomSpawnPosition(), powerUpVariantPrefab.transform.rotation);
         }
     }
 
