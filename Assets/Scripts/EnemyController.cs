@@ -20,7 +20,7 @@ public class EnemyController : MonoBehaviour
         // Use normalize to force the enemy to come after the player at the same speed
         // no matter how far or close the enemy is to the player
         var lookDirection = (_player.transform.position - transform.position).normalized;
-        _enemyRb.AddForce(lookDirection * speed);
+        _enemyRb.AddForce(lookDirection * speed * speed);
 
         // Destroy the enemy if they fall off the map
         if (transform.position.y < -10) Destroy(gameObject);
