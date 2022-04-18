@@ -1,22 +1,19 @@
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject enemyPrefab;
-    public GameObject enemyPrefabMedium;
-    public GameObject powerUpPrefab;
-    public GameObject powerUpVariantPrefab;
-    private GameObject _player;
-
     private const float SpawnRange = 9.0f;
     private static int _enemyCount = 1;
+
+    public GameObject[] enemyPrefabs;
+    public GameObject[] powerUpPrefabs;
+    private GameObject _tmpEnemy;
     public int waveNumber = 1;
 
     public void Start()
     {
-        _player = GameObject.Find("Player");
-        Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
+        var randomPowerUp = Random.Range(0, powerUpPrefabs.Length);
+        Instantiate(powerUpPrefabs[randomPowerUp], GenerateRandomSpawnPosition(), powerUpPrefabs[randomPowerUp].transform.rotation);
         SpawnEnemyWave(waveNumber);
     }
 
@@ -35,18 +32,23 @@ public class SpawnManager : MonoBehaviour
 
     private void SpawnPowerUpIndicator()
     {
-        _player.GetComponent<PlayerController>().powerUpType = Random.Range(0, 2);
-        var powerUpSelection = _player.GetComponent<PlayerController>().powerUpType;
+        var randomPowerUp = Random.Range(0, powerUpPrefabs.Length);
+        Instantiate(powerUpPrefabs[randomPowerUp], GenerateRandomSpawnPosition(), powerUpPrefabs[randomPowerUp].transform.rotation);
+    }
 
-        if (powerUpSelection == 1)
+    private void SpawnEnemy(int currentWave)
+    {
+        // Randomly instantiate enemy with increased difficulty after second wave
+        if (currentWave > 2)
         {
-            // A new powerUp spawns with every wave
-            Instantiate(powerUpPrefab, GenerateRandomSpawnPosition(), powerUpPrefab.transform.rotation);
+            var randomEnemyType = Random.Range(0, enemyPrefabs.Length);
+            _tmpEnemy = Instantiate(enemyPrefabs[randomEnemyType], GenerateRandomSpawnPosition(), enemyPrefabs[randomEnemyType].transform.rotation);
+            _tmpEnemy.GetComponent<EnemyController>().speed = randomEnemyType == 0 ? 3.0f : 7.0f;
         }
         else
         {
-            // A new powerUpVariant spawns
-            Instantiate(powerUpVariantPrefab, GenerateRandomSpawnPosition(), powerUpVariantPrefab.transform.rotation);
+            _tmpEnemy = Instantiate(enemyPrefabs[0], GenerateRandomSpawnPosition(), enemyPrefabs[0].transform.rotation);
+            _tmpEnemy.GetComponent<EnemyController>().speed = 3.0f;
         }
     }
 
@@ -54,19 +56,7 @@ public class SpawnManager : MonoBehaviour
     {
         for (var i = 0; i < enemiesToSpawn; i++)
         {
-            var enemyDifficulty = Random.Range(0, 3);
-
-            // Randomly instantiate enemy with increased difficulty after second wave
-            if (waveNumber > 2 && enemyDifficulty == 2)
-            {
-                enemyPrefabMedium.GetComponent<EnemyController>().speed = 7f;
-                Instantiate(enemyPrefabMedium, GenerateRandomSpawnPosition(), enemyPrefabMedium.transform.rotation);
-            }
-            else
-            {
-                enemyPrefab.GetComponent<EnemyController>().speed = 5f;
-                Instantiate(enemyPrefab, GenerateRandomSpawnPosition(), enemyPrefab.transform.rotation);
-            }
+            SpawnEnemy(waveNumber);
         }
     }
 

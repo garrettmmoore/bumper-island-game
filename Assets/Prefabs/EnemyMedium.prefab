@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8153684941216495587, guid: dae196ada55b1b7418f0f5ddf6eec8c5, type: 3}
+      propertyPath: enemyType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5001429199844276439, guid: dae196ada55b1b7418f0f5ddf6eec8c5, type: 3}
       propertyPath: m_Name
       value: EnemyMedium

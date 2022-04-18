@@ -7,9 +7,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3678301695742228225, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
+      propertyPath: powerUpType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 181608944565456222, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
       propertyPath: m_Name
-      value: Powerup Variant
+      value: PowerupRockets
       objectReference: {fileID: 0}
     - target: {fileID: 181608944565456222, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -62,7 +66,7 @@ PrefabInstance:
     - target: {fileID: 204204654349361394, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: a16b7b85a356b7d469067849a165dcff, type: 2}
+      objectReference: {fileID: 2100000, guid: 22938b7b0a8804447bc86c3274b84fba, type: 2}
     - target: {fileID: 212890597877405340, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
       propertyPath: m_Mesh
       value: 

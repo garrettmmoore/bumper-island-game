@@ -3,72 +3,31 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody _playerRb;
-    private Rigidbody _projectileRb;
-    private GameObject _focalPoint;
-    public GameObject powerUpIndicator;
-    public GameObject projectilePrefab;
-    public float projectilePosition;
+    public PowerUpType currentPowerUp = PowerUpType.None;
 
-    public float speed = 5.0f;
-    public bool hasPowerUp;
+    public float speed = 2.0f;
     public float powerUpStrength = 15.0f;
-    public int powerUpType = 1;
+    public bool hasPowerUp;
 
+    public GameObject powerUpIndicator;
+    public GameObject rocketPrefab;
 
-    // Start is called before the first frame update
+    private GameObject _focalPoint;
+    private GameObject _tmpRocket;
+    private Coroutine _powerUpCountdown;
+    private Rigidbody _playerRb;
+
     private void Start()
     {
-        _projectileRb = GetComponent<Rigidbody>();
         _playerRb = GetComponent<Rigidbody>();
         _focalPoint = GameObject.Find("Focal Point");
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        // When the player collects a powerup, a visual indicator appears
-        if (other.CompareTag("PowerUp"))
-        {
-            hasPowerUp = true;
-            powerUpIndicator.gameObject.SetActive(true);
-
-            // Remove the PowerUp from the view
-            Destroy(other.gameObject);
-            StartCoroutine(PowerUpCountDownRoutine());
-        }
-    }
-
-    // After a certain amount of time, the PowerUp ability and indicator disappear
-    private IEnumerator PowerUpCountDownRoutine()
-    {
-        yield return new WaitForSeconds(7);
-        hasPowerUp = false;
-        powerUpIndicator.gameObject.SetActive(false);
-    }
-
-    // Use OnCollision if using physics
-    private void OnCollisionEnter(Collision collision)
-    {
-        // When the player collides with an enemy while they have the PowerUp, the enemy goes flying
-        if (collision.gameObject.CompareTag("Enemy") && hasPowerUp)
-        {
-            var enemyRb = collision.gameObject.GetComponent<Rigidbody>();
-            var awayFromPlayer = collision.gameObject.transform.position - transform.position;
-            enemyRb.AddForce(awayFromPlayer * powerUpStrength, ForceMode.Impulse);
-        }
-    }
-
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (currentPowerUp == PowerUpType.Rockets && Input.GetKeyDown(KeyCode.Space))
         {
-            projectilePrefab.gameObject.SetActive(true);
-
-            // Instantiate(projectilePrefab);
-            // var transformPos = transform.position;
-            Instantiate(projectilePrefab, new Vector3(transform.position.x, transform.position.y, projectilePosition), projectilePrefab.transform.rotation);
-            // Debug.Log($"Projectile - x: {transform.position.x}, y: {transform.position.y} z: {projectilePosition}");
-            // Instantiate(projectile, new Vector3());
+            LaunchRockets();
             Debug.Log("Space Pressed and PowerUp Variant Clone found!");
         }
     }
@@ -80,13 +39,6 @@ public class PlayerController : MonoBehaviour
         var forwardInput = Input.GetAxis("Vertical");
         var horizontalInput = Input.GetAxis("Horizontal");
 
-        // Debug.Log("Space released");
-
-        // else if (powerUpType == 1 && hasPowerUp && Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     Debug.Log("Space Pressed, but no bueno");
-        // }
-
         _playerRb.AddForce(_focalPoint.transform.forward * (forwardInput * speed));
         _playerRb.AddForce(_focalPoint.transform.right * (horizontalInput * speed));
 
@@ -95,5 +47,57 @@ public class PlayerController : MonoBehaviour
         powerUpIndicator.transform.Rotate(new Vector3(0, 2, 0));
     }
 
+    // Use OnCollision if using physics
+    private void OnCollisionEnter(Collision collision)
+    {
+        // When the player collides with an enemy while they have the PowerUp, the enemy goes flying
+        if (collision.gameObject.CompareTag("Enemy") && currentPowerUp == PowerUpType.Pushback)
+        {
+            var enemyRb = collision.gameObject.GetComponent<Rigidbody>();
+            var awayFromPlayer = collision.gameObject.transform.position - transform.position;
+            enemyRb.AddForce(awayFromPlayer * powerUpStrength, ForceMode.Impulse);
+            Debug.Log("Player collided with: " + collision.gameObject.name + " with PowerUp set to " + currentPowerUp);
+        }
+    }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        // When the player collects a PowerUp, a visual indicator appears
+        if (other.CompareTag("PowerUp") && hasPowerUp == false)
+        {
+            hasPowerUp = true;
+            currentPowerUp = other.gameObject.GetComponent<PowerUp>().powerUpType;
+            powerUpIndicator.gameObject.SetActive(true);
+
+            // Remove the PowerUp from the view
+            Destroy(other.gameObject);
+
+            if (_powerUpCountdown != null)
+            {
+                StopCoroutine(_powerUpCountdown);
+            }
+
+            _powerUpCountdown = StartCoroutine(PowerUpCountDownRoutine());
+        }
+    }
+
+    // After a certain amount of time, the PowerUp ability and indicator disappear
+    private IEnumerator PowerUpCountDownRoutine()
+    {
+        yield return new WaitForSeconds(7);
+        hasPowerUp = false;
+        currentPowerUp = PowerUpType.None;
+        powerUpIndicator.gameObject.SetActive(false);
+    }
+
+    private void LaunchRockets()
+    {
+        // Find all of the enemies and launch missiles at each one
+        foreach (var enemy in FindObjectsOfType<EnemyController>())
+        {
+            // Launch the missiles from above the player to stop the collision from pushing us back
+            _tmpRocket = Instantiate(rocketPrefab, transform.position + Vector3.up, Quaternion.identity);
+            _tmpRocket.GetComponent<RocketBehavior>().Fire(enemy.transform);
+        }
+    }
 }
