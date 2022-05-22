@@ -7,15 +7,30 @@ public class PlayerController : MonoBehaviour
 
     public float speed = 2.0f;
     public float powerUpStrength = 15.0f;
-    public bool hasPowerUp;
 
+    // Smash
+    private float hangTime = 0.5f;
+    private float smashSpeed = 10.0f;
+    private float explosionForce = 20.0f;
+    private float explosionRadius = 10.0f;
+    private float _floorY;
+    private bool _isSmashing;
+    private bool _isGameOver;
+
+    // PowerUp
     public GameObject powerUpIndicator;
+    private Coroutine _powerUpCountdown;
+
+    // Rockets
     public GameObject rocketPrefab;
+    private GameObject _tmpRocket;
 
     private GameObject _focalPoint;
-    private GameObject _tmpRocket;
-    private Coroutine _powerUpCountdown;
     private Rigidbody _playerRb;
+
+    private static readonly int PowerUpRingColor = Shader.PropertyToID("_Color");
+    public GameManager gameManager;
+
 
     private void Start()
     {
@@ -25,10 +40,29 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (currentPowerUp == PowerUpType.Rockets && Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            LaunchRockets();
-            Debug.Log("Space Pressed and PowerUp Variant Clone found!");
+            switch (currentPowerUp)
+            {
+                case PowerUpType.Smash when !_isSmashing:
+                    _isSmashing = true;
+                    StartCoroutine(LaunchSmashAttack());
+                    break;
+                case PowerUpType.Rockets:
+                    LaunchRockets();
+                    break;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (gameManager.pauseText.IsActive())
+            {
+                gameManager.ResumeGame();
+            }
+            else
+            {
+                gameManager.PauseGame();
+            }
         }
     }
 
@@ -45,6 +79,14 @@ public class PlayerController : MonoBehaviour
         // The powerUpIndicator follows the player's position
         powerUpIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
         powerUpIndicator.transform.Rotate(new Vector3(0, 2, 0));
+
+        // Destroy the enemy if they fall off the map
+        if (gameManager.isGameActive && transform.position.y < -10)
+        {
+            gameObject.SetActive(false);
+            gameManager.GameOver();
+        }
+
     }
 
     // Use OnCollision if using physics
@@ -56,17 +98,30 @@ public class PlayerController : MonoBehaviour
             var enemyRb = collision.gameObject.GetComponent<Rigidbody>();
             var awayFromPlayer = collision.gameObject.transform.position - transform.position;
             enemyRb.AddForce(awayFromPlayer * powerUpStrength, ForceMode.Impulse);
-            Debug.Log("Player collided with: " + collision.gameObject.name + " with PowerUp set to " + currentPowerUp);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        var powerUpType = other.gameObject.GetComponent<PowerUp>().powerUpType;
+
         // When the player collects a PowerUp, a visual indicator appears
-        if (other.CompareTag("PowerUp") && hasPowerUp == false)
+        if (other.CompareTag("PowerUp"))
         {
-            hasPowerUp = true;
-            currentPowerUp = other.gameObject.GetComponent<PowerUp>().powerUpType;
+            currentPowerUp = powerUpType;
+            switch (currentPowerUp)
+            {
+                case PowerUpType.Pushback:
+                    powerUpIndicator.GetComponent<Renderer>().material.SetColor(PowerUpRingColor, Color.yellow);
+                    break;
+                case PowerUpType.Rockets:
+                    powerUpIndicator.GetComponent<Renderer>().material.SetColor(PowerUpRingColor, Color.green);
+                    break;
+                case PowerUpType.Smash:
+                    powerUpIndicator.GetComponent<Renderer>().material.SetColor(PowerUpRingColor, Color.magenta);
+                    break;
+            }
+
             powerUpIndicator.gameObject.SetActive(true);
 
             // Remove the PowerUp from the view
@@ -85,7 +140,6 @@ public class PlayerController : MonoBehaviour
     private IEnumerator PowerUpCountDownRoutine()
     {
         yield return new WaitForSeconds(7);
-        hasPowerUp = false;
         currentPowerUp = PowerUpType.None;
         powerUpIndicator.gameObject.SetActive(false);
     }
@@ -99,5 +153,51 @@ public class PlayerController : MonoBehaviour
             _tmpRocket = Instantiate(rocketPrefab, transform.position + Vector3.up, Quaternion.identity);
             _tmpRocket.GetComponent<RocketBehavior>().Fire(enemy.transform);
         }
+    }
+
+    private IEnumerator LaunchSmashAttack()
+    {
+        // Find all of the enemies
+        var enemies = FindObjectsOfType<EnemyController>();
+
+        // Store the y position before taking off
+        _floorY = transform.position.y;
+
+        // Calculate the amount of time we will go up
+        var jumpTime = Time.time + hangTime;
+
+        while (Time.time < jumpTime)
+        {
+            // move the player up while still keeping their x velocity
+            _playerRb.velocity = new Vector2(_playerRb.velocity.x, smashSpeed);
+            yield return null;
+        }
+
+        // Move the player back down
+        while (transform.position.y > _floorY)
+        {
+            _playerRb.velocity = new Vector2(_playerRb.velocity.x, -smashSpeed * 2);
+            yield return null;
+        }
+
+        // Find all of the enemies
+        foreach (var enemy in enemies)
+        {
+            // Apply an explosion force that originates from our position
+            if (enemy)
+            {
+                enemy.GetComponent<Rigidbody>()
+                     .AddExplosionForce(
+                         explosionForce,
+                         transform.position,
+                         explosionRadius,
+                         0.0f,
+                         ForceMode.Impulse
+                     );
+            }
+        }
+
+        // We are no longer smashing, so set the boolean to false
+        _isSmashing = false;
     }
 }

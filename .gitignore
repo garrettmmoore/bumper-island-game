@@ -72,3 +72,6 @@ crashlytics-build.properties
 
 /.idea
 /Assets/Instructions
+/WebGL Builds
+/connectwebgl.zip
+/webgl_sharing

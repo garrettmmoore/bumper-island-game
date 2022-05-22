@@ -12,9 +12,8 @@ public class SpawnManager : MonoBehaviour
 
     public void Start()
     {
-        var randomPowerUp = Random.Range(0, powerUpPrefabs.Length);
-        Instantiate(powerUpPrefabs[randomPowerUp], GenerateRandomSpawnPosition(), powerUpPrefabs[randomPowerUp].transform.rotation);
         SpawnEnemyWave(waveNumber);
+        SpawnPowerUpIndicator();
     }
 
     private void FixedUpdate()
@@ -39,9 +38,9 @@ public class SpawnManager : MonoBehaviour
     private void SpawnEnemy(int currentWave)
     {
         // Randomly instantiate enemy with increased difficulty after second wave
-        if (currentWave > 2)
+        if (currentWave > 2 && currentWave != 5 && currentWave != 10)
         {
-            var randomEnemyType = Random.Range(0, enemyPrefabs.Length);
+            var randomEnemyType = Random.Range(0, 2);
             _tmpEnemy = Instantiate(enemyPrefabs[randomEnemyType], GenerateRandomSpawnPosition(), enemyPrefabs[randomEnemyType].transform.rotation);
             _tmpEnemy.GetComponent<EnemyController>().speed = randomEnemyType == 0 ? 3.0f : 7.0f;
         }
@@ -52,11 +51,25 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    private void SpawnBossWave()
+    {
+        _tmpEnemy = Instantiate(enemyPrefabs[2], GenerateRandomSpawnPosition(), enemyPrefabs[2].transform.rotation);
+        _tmpEnemy.GetComponent<EnemyController>().speed = 12.0f;
+
+    }
+
     private void SpawnEnemyWave(int enemiesToSpawn)
     {
-        for (var i = 0; i < enemiesToSpawn; i++)
+        if (waveNumber != 5 && waveNumber != 10)
         {
-            SpawnEnemy(waveNumber);
+            for (var i = 0; i < enemiesToSpawn; i++)
+            {
+                SpawnEnemy(waveNumber);
+            }
+        }
+        else
+        {
+            SpawnBossWave();
         }
     }
 

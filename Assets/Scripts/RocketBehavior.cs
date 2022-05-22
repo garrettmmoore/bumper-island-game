@@ -21,10 +21,10 @@ public class RocketBehavior : MonoBehaviour
     private void Update()
     {
         // Rotate and move the missiles toward the target
-        if (_homing && _target != null)
+        if (_homing && _target)
         {
             var moveDirection = (_target.transform.position - transform.position).normalized;
-            transform.position += moveDirection * Speed * Time.deltaTime;
+            transform.position += moveDirection * (Speed * Time.deltaTime);
             transform.LookAt(_target);
         }
     }
@@ -33,23 +33,21 @@ public class RocketBehavior : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Check if we have a target
-        if (_target != null)
-        {
-            // Compare the tag of the colliding object with the tag of the target
-            if (collision.gameObject.CompareTag(_target.tag))
-            {
-                // Get the rigidbody of the target
-                Rigidbody targetRigidbody = collision.gameObject.GetComponent<Rigidbody>();
+        if (!_target) return;
+        
+        // Compare the tag of the colliding object with the tag of the target
+        if (!collision.gameObject.CompareTag(_target.tag)) return;
+        
+        // Get the rigidbody of the target
+        var targetRigidbody = collision.gameObject.GetComponent<Rigidbody>();
 
-                // Use the normal of the collision contact to determine which direction to push the target in
-                var away = -collision.contacts[0].normal;
+        // Use the normal of the collision contact to determine which direction to push the target in
+        var away = -collision.contacts[0].normal;
 
-                // Apply the force to the target
-                targetRigidbody.AddForce(away * RocketStrength, ForceMode.Impulse);
+        // Apply the force to the target
+        targetRigidbody.AddForce(away * RocketStrength, ForceMode.Impulse);
 
-                // Destroy the missile
-                Destroy(gameObject);
-            }
-        }
+        // Destroy the missile
+        Destroy(gameObject);
     }
 }

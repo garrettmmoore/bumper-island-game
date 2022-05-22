@@ -5,7 +5,8 @@ public enum PowerUpType
 {
     None,
     Pushback,
-    Rockets
+    Rockets,
+    Smash
 }
 
 public class PowerUp : MonoBehaviour
