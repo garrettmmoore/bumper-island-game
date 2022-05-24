@@ -5,7 +5,7 @@ using Button = UnityEngine.UI.Button;
 
 public class GameManager : MonoBehaviour
 {
-    public int score = 0;
+    public int score;
     public bool isGameActive;
     public Button retryButton;
     public TextMeshProUGUI gameOverText;
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
-        scoreText.text = $"Score :{score}";
+        scoreText.text = $"Score: {score}";
     }
 
     public void GameOver()
