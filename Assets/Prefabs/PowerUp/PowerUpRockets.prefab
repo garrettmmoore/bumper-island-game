@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -3678301695742228225, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
@@ -13,7 +14,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 181608944565456222, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
       propertyPath: m_Name
-      value: PowerupRockets
+      value: PowerUpRockets
+      objectReference: {fileID: 0}
+    - target: {fileID: 181608944565456222, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 181608944565456222, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -72,4 +77,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4300000, guid: 44cb397c8b73c2f40bfa05c2199ffa2b, type: 3}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}

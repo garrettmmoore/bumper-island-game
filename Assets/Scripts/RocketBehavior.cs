@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RocketBehavior : MonoBehaviour
@@ -7,7 +9,6 @@ public class RocketBehavior : MonoBehaviour
     private bool _homing;
     private const float Speed = 15.0f;
     private const float RocketStrength = 15.0f;
-    private const float AliveTimer = 5.0f;
 
     // Takes in a Transform that we will set as the target.
     // It will set the homing boolean to true and then set the GameObject to be destroyed after 5 seconds
@@ -15,7 +16,7 @@ public class RocketBehavior : MonoBehaviour
     {
         _target = homingTarget;
         _homing = true;
-        Destroy(gameObject, AliveTimer);
+        gameObject.SetActive(false);
     }
 
     private void Update()
@@ -27,6 +28,13 @@ public class RocketBehavior : MonoBehaviour
             transform.position += moveDirection * (Speed * Time.deltaTime);
             transform.LookAt(_target);
         }
+
+        // Deactivate bullet if the target no longer exists
+        if (!_target)
+        {
+            gameObject.SetActive(false);
+        }
+
     }
 
     // Add a force to whatever is hit
@@ -34,10 +42,10 @@ public class RocketBehavior : MonoBehaviour
     {
         // Check if we have a target
         if (!_target) return;
-        
+
         // Compare the tag of the colliding object with the tag of the target
         if (!collision.gameObject.CompareTag(_target.tag)) return;
-        
+
         // Get the rigidbody of the target
         var targetRigidbody = collision.gameObject.GetComponent<Rigidbody>();
 
@@ -47,7 +55,8 @@ public class RocketBehavior : MonoBehaviour
         // Apply the force to the target
         targetRigidbody.AddForce(away * RocketStrength, ForceMode.Impulse);
 
-        // Destroy the missile
-        Destroy(gameObject);
+        Debug.Log($"RocketBehavior.OnCollisionEnter Name {gameObject.name}");
+        // Deactivate the missile
+        gameObject.SetActive(false);
     }
 }

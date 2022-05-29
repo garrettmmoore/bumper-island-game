@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     private float hangTime = 0.5f;
     private float smashSpeed = 10.0f;
     private float explosionForce = 20.0f;
-    private float explosionRadius = 10.0f;
+    private float explosionRadius = 12.0f;
     private float _floorY;
     private bool _isSmashing;
     private bool _isGameOver;
@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        // Use powerup
         if (Input.GetKeyDown(KeyCode.Space))
         {
             switch (currentPowerUp)
@@ -53,6 +54,8 @@ public class PlayerController : MonoBehaviour
                     break;
             }
         }
+
+        // Pause and Resume the game
         if (Input.GetKeyDown(KeyCode.P))
         {
             if (gameManager.pauseText.IsActive())
@@ -80,13 +83,12 @@ public class PlayerController : MonoBehaviour
         powerUpIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
         powerUpIndicator.transform.Rotate(new Vector3(0, 2, 0));
 
-        // Destroy the enemy if they fall off the map
+        // Destroy the player if they fall off the map
         if (gameManager.isGameActive && transform.position.y < -10)
         {
             gameObject.SetActive(false);
             gameManager.GameOver();
         }
-
     }
 
     // Use OnCollision if using physics
@@ -112,13 +114,16 @@ public class PlayerController : MonoBehaviour
             switch (currentPowerUp)
             {
                 case PowerUpType.Pushback:
-                    powerUpIndicator.GetComponent<Renderer>().material.SetColor(PowerUpRingColor, Color.yellow);
+                    powerUpIndicator.GetComponent<Renderer>()
+                                    .material.SetColor(PowerUpRingColor, Color.yellow);
                     break;
                 case PowerUpType.Rockets:
-                    powerUpIndicator.GetComponent<Renderer>().material.SetColor(PowerUpRingColor, Color.green);
+                    powerUpIndicator.GetComponent<Renderer>()
+                                    .material.SetColor(PowerUpRingColor, Color.green);
                     break;
                 case PowerUpType.Smash:
-                    powerUpIndicator.GetComponent<Renderer>().material.SetColor(PowerUpRingColor, Color.magenta);
+                    powerUpIndicator.GetComponent<Renderer>()
+                                    .material.SetColor(PowerUpRingColor, Color.magenta);
                     break;
             }
 
@@ -149,9 +154,15 @@ public class PlayerController : MonoBehaviour
         // Find all of the enemies and launch missiles at each one
         foreach (var enemy in FindObjectsOfType<EnemyController>())
         {
-            // Launch the missiles from above the player to stop the collision from pushing us back
-            _tmpRocket = Instantiate(rocketPrefab, transform.position + Vector3.up, Quaternion.identity);
-            _tmpRocket.GetComponent<RocketBehavior>().Fire(enemy.transform);
+            rocketPrefab = ObjectPool.sharedInstance.GetPooledObject();
+            if (rocketPrefab != null)
+            {
+                // Launch the missiles from above the player to stop the collision from pushing us back
+                rocketPrefab.transform.position = transform.position + Vector3.up;
+                rocketPrefab.transform.rotation = Quaternion.identity;
+                rocketPrefab.GetComponent<RocketBehavior>().Fire(enemy.transform);
+                rocketPrefab.SetActive(true);
+            }
         }
     }
 
