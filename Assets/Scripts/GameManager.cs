@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Button = UnityEngine.UI.Button;
@@ -7,11 +8,19 @@ public class GameManager : MonoBehaviour
 {
     public int score;
     public bool isGameActive;
+    [NonSerialized] public const float IdleTimeSetting = 10.0f;
+    [NonSerialized] public float lastIdleTime;
+    
     public Button retryButton;
     public TextMeshProUGUI gameOverText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI pauseText;
 
+    public void Awake()
+    {
+        lastIdleTime = Time.time;
+    }
+    
     public void Start()
     {
         StartGame();
@@ -67,5 +76,11 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         pauseText.gameObject.SetActive(false);
+    }
+
+    public bool IdleCheck()
+    {
+        var check = Time.time - lastIdleTime > IdleTimeSetting;
+        return check;
     }
 }
