@@ -1,11 +1,20 @@
 using UnityEngine;
 
+public enum EnemyType
+{
+    Easy,
+    Medium,
+    Hard
+}
+
 public class EnemyController : MonoBehaviour
 {
     public float speed;
     private Rigidbody _enemyRb;
     private GameObject _player;
     private GameManager _gameManagerObj;
+    public EnemyType enemyType; 
+
 
     private void Start()
     {
@@ -13,7 +22,7 @@ public class EnemyController : MonoBehaviour
         _enemyRb = GetComponent<Rigidbody>();
         _gameManagerObj = FindObjectOfType<GameManager>();
     }
-    
+
     // FixedUpdate updates at a fixed rate of 50 times/sec
     // Note: Update does not work here as we don't want to update each frame
     private void FixedUpdate()
@@ -28,7 +37,7 @@ public class EnemyController : MonoBehaviour
         // Destroy the enemy if they fall off the map
         if (transform.position.y < -10)
         {
-            _gameManagerObj.UpdateScore(gameObject.name);
+            _gameManagerObj.UpdateScore(enemyType);
             Destroy(gameObject);
         }
     }

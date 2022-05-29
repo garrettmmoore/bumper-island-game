@@ -54,8 +54,7 @@ public class RocketBehavior : MonoBehaviour
 
         // Apply the force to the target
         targetRigidbody.AddForce(away * RocketStrength, ForceMode.Impulse);
-
-        Debug.Log($"RocketBehavior.OnCollisionEnter Name {gameObject.name}");
+        
         // Deactivate the missile
         gameObject.SetActive(false);
     }

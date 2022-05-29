@@ -15,7 +15,6 @@ public class PlayerController : MonoBehaviour
     private float explosionRadius = 12.0f;
     private float _floorY;
     private bool _isSmashing;
-    private bool _isGameOver;
 
     // PowerUp
     public GameObject powerUpIndicator;

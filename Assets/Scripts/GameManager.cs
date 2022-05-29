@@ -24,26 +24,17 @@ public class GameManager : MonoBehaviour
     }
     
     // Update score with value from target clicked
-    public void UpdateScore(string enemyName)
+    public void UpdateScore( EnemyType enemyType)
     {
-        switch (enemyName)
+        switch (enemyType)
         {
-            case "Enemy":
+            case EnemyType.Easy:
                 score += 100;
                 break;
-            case "Enemy(Clone)":
-                score += 100;
-                break;
-            case "EnemyMedium":
+            case EnemyType.Medium:
                 score += 200;
                 break;
-            case "EnemyMedium(Clone)":
-                score += 200;
-                break;
-            case "EnemyBoss":
-                score += 500;
-                break;
-            case "EnemyBoss(Clone)":
+            case EnemyType.Hard:
                 score += 500;
                 break;
         }

@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -19,12 +22,12 @@ public class SpawnManager : MonoBehaviour
     private void FixedUpdate()
     {
         _enemyCount = FindObjectsOfType<EnemyController>().Length;
-
+        
         if (_enemyCount == 0)
         {
             // The number of enemies spawned increases after every wave is defeated
             waveNumber++;
-            SpawnEnemyWave(waveNumber);
+            // SpawnEnemyWave(waveNumber);
             SpawnPowerUpIndicator();
         }
     }
@@ -40,20 +43,23 @@ public class SpawnManager : MonoBehaviour
         // Randomly instantiate enemy with increased difficulty after second wave
         if (currentWave > 2 && currentWave != 5 && currentWave != 10)
         {
-            var randomEnemyType = Random.Range(0, 2);
-            _tmpEnemy = Instantiate(enemyPrefabs[randomEnemyType], GenerateRandomSpawnPosition(), enemyPrefabs[randomEnemyType].transform.rotation);
-            _tmpEnemy.GetComponent<EnemyController>().speed = randomEnemyType == 0 ? 3.0f : 7.0f;
+            var randomEnemyType = (EnemyType)Random.Range(0, (int)Enum.GetValues(typeof(EnemyType)).Cast<EnemyType>().Max());
+            var enemy = enemyPrefabs[(int)randomEnemyType];
+            if (!enemy) return;
+            
+            _tmpEnemy = Instantiate(enemy, GenerateRandomSpawnPosition(), enemy.transform.rotation);
+            _tmpEnemy.GetComponent<EnemyController>().speed = randomEnemyType == EnemyType.Easy ? 3.0f : 7.0f;
         }
         else
         {
-            _tmpEnemy = Instantiate(enemyPrefabs[0], GenerateRandomSpawnPosition(), enemyPrefabs[0].transform.rotation);
+            _tmpEnemy = Instantiate(enemyPrefabs[(int)EnemyType.Easy], GenerateRandomSpawnPosition(), enemyPrefabs[(int)EnemyType.Easy].transform.rotation);
             _tmpEnemy.GetComponent<EnemyController>().speed = 3.0f;
         }
     }
 
     private void SpawnBossWave()
     {
-        _tmpEnemy = Instantiate(enemyPrefabs[2], GenerateRandomSpawnPosition(), enemyPrefabs[2].transform.rotation);
+        _tmpEnemy = Instantiate(enemyPrefabs[(int)EnemyType.Hard], GenerateRandomSpawnPosition(), enemyPrefabs[(int)EnemyType.Hard].transform.rotation);
         _tmpEnemy.GetComponent<EnemyController>().speed = 12.0f;
 
     }
