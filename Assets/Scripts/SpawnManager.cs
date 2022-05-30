@@ -27,7 +27,7 @@ public class SpawnManager : MonoBehaviour
         {
             // The number of enemies spawned increases after every wave is defeated
             waveNumber++;
-            // SpawnEnemyWave(waveNumber);
+            SpawnEnemyWave(waveNumber);
             SpawnPowerUpIndicator();
         }
     }

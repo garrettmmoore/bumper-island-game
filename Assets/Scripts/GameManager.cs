@@ -8,19 +8,12 @@ public class GameManager : MonoBehaviour
 {
     public int score;
     public bool isGameActive;
-    [NonSerialized] public const float IdleTimeSetting = 10.0f;
-    [NonSerialized] public float lastIdleTime;
-    
+
     public Button retryButton;
     public TextMeshProUGUI gameOverText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI pauseText;
 
-    public void Awake()
-    {
-        lastIdleTime = Time.time;
-    }
-    
     public void Start()
     {
         StartGame();
@@ -31,9 +24,9 @@ public class GameManager : MonoBehaviour
         isGameActive = true;
         scoreText.gameObject.SetActive(true);
     }
-    
+
     // Update score with value from target clicked
-    public void UpdateScore( EnemyType enemyType)
+    public void UpdateScore(EnemyType enemyType)
     {
         switch (enemyType)
         {
@@ -59,7 +52,6 @@ public class GameManager : MonoBehaviour
         retryButton.onClick.AddListener(RestartGame);
     }
 
-
     public void RestartGame()
     {
         var scene = SceneManager.GetActiveScene().name;
@@ -76,11 +68,5 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         pauseText.gameObject.SetActive(false);
-    }
-
-    public bool IdleCheck()
-    {
-        var check = Time.time - lastIdleTime > IdleTimeSetting;
-        return check;
     }
 }

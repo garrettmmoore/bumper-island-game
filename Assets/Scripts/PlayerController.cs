@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Use powerup
+        // Use PowerUp
         if (Input.GetKeyDown(KeyCode.Space))
         {
             switch (currentPowerUp)
@@ -65,20 +65,6 @@ public class PlayerController : MonoBehaviour
             {
                 gameManager.PauseGame();
             }
-        }
-
-        if (Input.anyKey && gameManager.isGameActive)
-        {
-            gameManager.lastIdleTime = Time.time;
-            Debug.Log($"Last Idle Time {gameManager.lastIdleTime}");
-            Debug.Log($"Idle Time Setting {GameManager.IdleTimeSetting}");
-            Debug.Log($"Total Elapsed {Time.time - gameManager.lastIdleTime}");
-        }
-
-        if (gameManager.isGameActive && gameManager.IdleCheck())
-        {
-            Debug.Log($"Game over, idle for too long {gameManager.lastIdleTime}");
-            gameManager.GameOver();
         }
     }
 
