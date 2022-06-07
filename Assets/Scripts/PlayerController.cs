@@ -30,7 +30,6 @@ public class PlayerController : MonoBehaviour
     private static readonly int PowerUpRingColor = Shader.PropertyToID("_Color");
     public GameManager gameManager;
 
-
     private void Start()
     {
         _playerRb = GetComponent<Rigidbody>();
