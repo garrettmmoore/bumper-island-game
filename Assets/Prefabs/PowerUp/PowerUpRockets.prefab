@@ -76,6 +76,14 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: 44cb397c8b73c2f40bfa05c2199ffa2b, type: 3}
+    - target: {fileID: 9023017769047945110, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 6d42eaed6b3b838428f311e58a17e833, type: 3}
+    - target: {fileID: 9023017769047945110, guid: e7e39258d4d67814a8b67dedaa9f4f2e, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

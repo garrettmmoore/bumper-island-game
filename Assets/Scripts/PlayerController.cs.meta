@@ -3,7 +3,11 @@ guid: 8335f853d9e7d5a4aa5266620f654132
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - powerUpIndicator: {instanceID: 0}
+  - rocketPrefab: {instanceID: 0}
+  - gameManager: {instanceID: 0}
+  - bulletSound: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

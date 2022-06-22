@@ -29,9 +29,15 @@ public class PlayerController : MonoBehaviour
 
     private static readonly int PowerUpRingColor = Shader.PropertyToID("_Color");
     public GameManager gameManager;
+    private AudioSource _sfxAudioSource;
+    [SerializeField] private AudioClip bulletSound;
+    [SerializeField] private AudioClip bounceSound;
+    [SerializeField] private AudioClip bumpSound;
+    [SerializeField] private AudioClip powerUpSound;
 
     private void Start()
     {
+        _sfxAudioSource = GetComponent<AudioSource>();
         _playerRb = GetComponent<Rigidbody>();
         _focalPoint = GameObject.Find("Focal Point");
     }
@@ -48,6 +54,7 @@ public class PlayerController : MonoBehaviour
                     StartCoroutine(LaunchSmashAttack());
                     break;
                 case PowerUpType.Rockets:
+                    _sfxAudioSource.PlayOneShot(bulletSound);
                     LaunchRockets();
                     break;
             }
@@ -95,6 +102,7 @@ public class PlayerController : MonoBehaviour
         // When the player collides with an enemy while they have the PowerUp, the enemy goes flying
         if (collision.gameObject.CompareTag("Enemy") && currentPowerUp == PowerUpType.Pushback)
         {
+            _sfxAudioSource.PlayOneShot(bumpSound);
             var enemyRb = collision.gameObject.GetComponent<Rigidbody>();
             var awayFromPlayer = collision.gameObject.transform.position - transform.position;
             enemyRb.AddForce(awayFromPlayer * powerUpStrength, ForceMode.Impulse);
@@ -108,6 +116,7 @@ public class PlayerController : MonoBehaviour
         // When the player collects a PowerUp, a visual indicator appears
         if (other.CompareTag("PowerUp"))
         {
+            _sfxAudioSource.PlayOneShot(powerUpSound);
             currentPowerUp = powerUpType;
             switch (currentPowerUp)
             {
@@ -142,7 +151,8 @@ public class PlayerController : MonoBehaviour
     // After a certain amount of time, the PowerUp ability and indicator disappear
     private IEnumerator PowerUpCountDownRoutine()
     {
-        yield return new WaitForSeconds(7);
+        var wait = Helpers.GetWait(7);
+        yield return wait;
         currentPowerUp = PowerUpType.None;
         powerUpIndicator.gameObject.SetActive(false);
     }
@@ -206,6 +216,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        _sfxAudioSource.PlayOneShot(bounceSound);
         // We are no longer smashing, so set the boolean to false
         _isSmashing = false;
     }
