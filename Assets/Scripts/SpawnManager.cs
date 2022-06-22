@@ -8,6 +8,7 @@ public class SpawnManager : MonoBehaviour
     private const float SpawnRange = 9.0f;
     private static int _enemyCount = 1;
 
+    public GameManager _gameManagerObj;
     public GameObject[] enemyPrefabs;
     public GameObject[] powerUpPrefabs;
     private GameObject _tmpEnemy;
@@ -17,6 +18,7 @@ public class SpawnManager : MonoBehaviour
     {
         SpawnEnemyWave(waveNumber);
         SpawnPowerUpIndicator();
+        _gameManagerObj = FindObjectOfType<GameManager>();
     }
 
     private void FixedUpdate()
@@ -27,6 +29,7 @@ public class SpawnManager : MonoBehaviour
         {
             // The number of enemies spawned increases after every wave is defeated
             waveNumber++;
+            _gameManagerObj.UpdateLevel();
             SpawnEnemyWave(waveNumber);
             SpawnPowerUpIndicator();
         }

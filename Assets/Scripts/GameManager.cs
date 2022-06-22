@@ -7,11 +7,13 @@ using Button = UnityEngine.UI.Button;
 public class GameManager : MonoBehaviour
 {
     public int score;
+    private int level;
     public bool isGameActive;
 
     public Button retryButton;
     public TextMeshProUGUI gameOverText;
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI levelText;
     public TextMeshProUGUI pauseText;
 
     public void Start()
@@ -23,6 +25,7 @@ public class GameManager : MonoBehaviour
     {
         isGameActive = true;
         scoreText.gameObject.SetActive(true);
+        levelText.gameObject.SetActive(true);
     }
 
     // Update score with value from target clicked
@@ -42,6 +45,12 @@ public class GameManager : MonoBehaviour
         }
 
         scoreText.text = $"Score: {score}";
+    }
+    
+    public void UpdateLevel()
+    {
+        level++;
+        levelText.text = $"Level: {level}";
     }
 
     public void GameOver()
