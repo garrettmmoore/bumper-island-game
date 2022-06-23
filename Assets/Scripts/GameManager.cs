@@ -1,5 +1,4 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Button = UnityEngine.UI.Button;
@@ -7,7 +6,6 @@ using Button = UnityEngine.UI.Button;
 public class GameManager : MonoBehaviour
 {
     public int score;
-    private int level;
     public bool isGameActive;
 
     public Button retryButton;
@@ -26,6 +24,7 @@ public class GameManager : MonoBehaviour
         isGameActive = true;
         scoreText.gameObject.SetActive(true);
         levelText.gameObject.SetActive(true);
+        UpdateLevel(1);
     }
 
     // Update score with value from target clicked
@@ -47,10 +46,9 @@ public class GameManager : MonoBehaviour
         scoreText.text = $"Score: {score}";
     }
     
-    public void UpdateLevel()
+    public void UpdateLevel(int waveNumber)
     {
-        level++;
-        levelText.text = $"Level: {level}";
+        levelText.text = $"Level: {waveNumber}";
     }
 
     public void GameOver()
