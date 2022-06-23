@@ -3,37 +3,43 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public PowerUpType currentPowerUp = PowerUpType.None;
+    // Player settings
+    [SerializeField] private float movementSpeed = 10.0f;
+    private Rigidbody _playerRb;
 
-    public float speed = 2.0f;
+    // Bump attack
     public float powerUpStrength = 15.0f;
 
-    // Smash
-    private float hangTime = 0.5f;
-    private float smashSpeed = 10.0f;
-    private float explosionForce = 20.0f;
-    private float explosionRadius = 12.0f;
+    // Smash attack
+    private const float HangTime = 0.5f;
+    private const float SmashSpeed = 10.0f;
+    private const float ExplosionForce = 20.0f;
+    private const float ExplosionRadius = 15.0f;
     private float _floorY;
     private bool _isSmashing;
 
-    // PowerUp
-    public GameObject powerUpIndicator;
-    private Coroutine _powerUpCountdown;
-
-    // Rockets
+    // Rocket attack
     public GameObject rocketPrefab;
     private GameObject _tmpRocket;
 
-    private GameObject _focalPoint;
-    private Rigidbody _playerRb;
+    // PowerUp
+    public PowerUpType currentPowerUp = PowerUpType.None;
+    public Transform powerUpIndicator;
+    public Renderer powerUpIndicatorRenderer;
+    private Coroutine _powerUpCountdown;
+    private static readonly int PowerUpIndicatorColor = Shader.PropertyToID("_Color");
 
-    private static readonly int PowerUpRingColor = Shader.PropertyToID("_Color");
-    public GameManager gameManager;
+    // Camera
+    private GameObject _focalPoint;
+
+    // Audio
     private AudioSource _sfxAudioSource;
     [SerializeField] private AudioClip bulletSound;
     [SerializeField] private AudioClip bounceSound;
     [SerializeField] private AudioClip bumpSound;
     [SerializeField] private AudioClip powerUpSound;
+
+    public GameManager gameManager;
 
     private void Start()
     {
@@ -60,7 +66,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Pause and Resume the game
+        // Pause and resume the game
         if (Input.GetKeyDown(KeyCode.P))
         {
             if (gameManager.pauseText.IsActive())
@@ -74,20 +80,32 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     private void FixedUpdate()
+    {
+        MovePlayer();
+        UpdatePowerUpIndicatorPosition();
+        CheckPlayerOutOfBounds();
+    }
+
+    private void MovePlayer()
     {
         // Move the player in the direction that our camera is pointing in
         var forwardInput = Input.GetAxis("Vertical");
         var horizontalInput = Input.GetAxis("Horizontal");
 
-        _playerRb.AddForce(_focalPoint.transform.forward * (forwardInput * speed));
-        _playerRb.AddForce(_focalPoint.transform.right * (horizontalInput * speed));
+        _playerRb.AddForce(_focalPoint.transform.forward * (forwardInput * movementSpeed));
+        _playerRb.AddForce(_focalPoint.transform.right * (horizontalInput * movementSpeed));
+    }
 
+    private void UpdatePowerUpIndicatorPosition()
+    {
         // The powerUpIndicator follows the player's position
-        powerUpIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
-        powerUpIndicator.transform.Rotate(new Vector3(0, 2, 0));
+        powerUpIndicator.position = transform.position + new Vector3(0, -0.5f, 0);
+        powerUpIndicator.Rotate(new Vector3(0, 2, 0));
+    }
 
+    private void CheckPlayerOutOfBounds()
+    {
         // Destroy the player if they fall off the map
         if (gameManager.isGameActive && transform.position.y < -10)
         {
@@ -96,7 +114,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Use OnCollision if using physics
     private void OnCollisionEnter(Collision collision)
     {
         // When the player collides with an enemy while they have the PowerUp, the enemy goes flying
@@ -121,16 +138,13 @@ public class PlayerController : MonoBehaviour
             switch (currentPowerUp)
             {
                 case PowerUpType.Pushback:
-                    powerUpIndicator.GetComponent<Renderer>()
-                                    .material.SetColor(PowerUpRingColor, Color.yellow);
+                    powerUpIndicatorRenderer.material.SetColor(PowerUpIndicatorColor, Color.yellow);
                     break;
                 case PowerUpType.Rockets:
-                    powerUpIndicator.GetComponent<Renderer>()
-                                    .material.SetColor(PowerUpRingColor, Color.green);
+                    powerUpIndicatorRenderer.material.SetColor(PowerUpIndicatorColor, Color.green);
                     break;
                 case PowerUpType.Smash:
-                    powerUpIndicator.GetComponent<Renderer>()
-                                    .material.SetColor(PowerUpRingColor, Color.magenta);
+                    powerUpIndicatorRenderer.material.SetColor(PowerUpIndicatorColor, Color.magenta);
                     break;
             }
 
@@ -183,19 +197,19 @@ public class PlayerController : MonoBehaviour
         _floorY = transform.position.y;
 
         // Calculate the amount of time we will go up
-        var jumpTime = Time.time + hangTime;
+        var jumpTime = Time.time + HangTime;
 
         while (Time.time < jumpTime)
         {
             // move the player up while still keeping their x velocity
-            _playerRb.velocity = new Vector2(_playerRb.velocity.x, smashSpeed);
+            _playerRb.velocity = new Vector2(_playerRb.velocity.x, SmashSpeed);
             yield return null;
         }
 
         // Move the player back down
         while (transform.position.y > _floorY)
         {
-            _playerRb.velocity = new Vector2(_playerRb.velocity.x, -smashSpeed * 2);
+            _playerRb.velocity = new Vector2(_playerRb.velocity.x, -SmashSpeed * 2);
             yield return null;
         }
 
@@ -207,9 +221,9 @@ public class PlayerController : MonoBehaviour
             {
                 enemy.GetComponent<Rigidbody>()
                      .AddExplosionForce(
-                         explosionForce,
+                         ExplosionForce,
                          transform.position,
-                         explosionRadius,
+                         ExplosionRadius,
                          0.0f,
                          ForceMode.Impulse
                      );
