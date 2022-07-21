@@ -1,57 +1,87 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
     // Player settings
-    [SerializeField] private float movementSpeed = 10.0f;
     private Rigidbody _playerRb;
-
-    // Bump attack
-    public float powerUpStrength = 15.0f;
+    [SerializeField] private float movementSpeed = 10.0f;
 
     // Smash attack
     private const float HangTime = 0.5f;
     private const float SmashSpeed = 10.0f;
     private const float ExplosionForce = 20.0f;
-    private const float ExplosionRadius = 15.0f;
+    private const float ExplosionRadius = 30.0f;
     private float _floorY;
     private bool _isSmashing;
+    private bool _isJumping;
 
     // Rocket attack
     public GameObject rocketPrefab;
     private GameObject _tmpRocket;
 
+    // Bump attack
+    public float powerUpStrength = 15.0f;
+
     // PowerUp
     public PowerUpType currentPowerUp = PowerUpType.None;
-    public Transform powerUpIndicator;
-    public Renderer powerUpIndicatorRenderer;
     private Coroutine _powerUpCountdown;
-    private static readonly int PowerUpIndicatorColor = Shader.PropertyToID("_Color");
+
+    // PowerUp Indicator
+    private Transform _powerUpIndicator;
+    private Renderer _powerUpIndicatorRenderer;
+
+    private readonly int _powerUpIndicatorColor = Shader.PropertyToID("_Color");
+
+    // Movement
+    private Vector2 m_move;
 
     // Camera
-    private GameObject _focalPoint;
+    private Transform _focalPoint;
+    private PlayerInput _playerInput;
 
     // Audio
-    private AudioSource _sfxAudioSource;
+    private static AudioSource _sfxAudioSource;
     [SerializeField] private AudioClip bulletSound;
     [SerializeField] private AudioClip bounceSound;
     [SerializeField] private AudioClip bumpSound;
     [SerializeField] private AudioClip powerUpSound;
+    private GameManager _gameManager;
 
-    public GameManager gameManager;
-
-    private void Start()
+    private void Awake()
     {
-        _sfxAudioSource = GetComponent<AudioSource>();
+        _sfxAudioSource = gameObject.AddComponent<AudioSource>();
         _playerRb = GetComponent<Rigidbody>();
-        _focalPoint = GameObject.Find("Focal Point");
+        _powerUpIndicator = Instantiate(Resources.Load("Prefabs/SelectionRing", typeof(Transform))) as Transform;
+        if (_powerUpIndicator != null)
+        {
+            _powerUpIndicator.gameObject.SetActive(false);
+            _powerUpIndicatorRenderer = _powerUpIndicator.gameObject.GetComponent<Renderer>();
+        }
+        
+        _focalPoint = GameObject.FindGameObjectWithTag("PlayerFocalPoint").transform;
+        _gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
     }
 
-    private void Update()
+    public void OnJump(InputAction.CallbackContext context)
     {
-        // Use PowerUp
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (transform.position.y <= .25)
+        {
+            _isJumping = false;
+        }
+
+        if (!_isSmashing && !_isJumping && context.performed)
+        {
+            _playerRb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+            _isJumping = true;
+        }
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (context.performed)
         {
             switch (currentPowerUp)
             {
@@ -65,52 +95,58 @@ public class PlayerController : MonoBehaviour
                     break;
             }
         }
+    }
 
-        // Pause and resume the game
-        if (Input.GetKeyDown(KeyCode.P))
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if (context.performed)
         {
-            if (gameManager.pauseText.IsActive())
+            if (!_gameManager.pauseText.IsActive())
             {
-                gameManager.ResumeGame();
+                _gameManager.PauseGame();
+                // Select topmost button.
+                EventSystem.current.SetSelectedGameObject(_gameManager.resumeButton.gameObject);
             }
-            else
+            else if (_gameManager.pauseText.IsActive())
             {
-                gameManager.PauseGame();
+                _gameManager.ResumeGame();
             }
         }
     }
 
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        // Move the player in the direction that our camera is pointing in
+        m_move = context.ReadValue<Vector2>();
+    }
+
     private void FixedUpdate()
     {
-        MovePlayer();
+        MovePlayer(m_move);
         UpdatePowerUpIndicatorPosition();
         CheckPlayerOutOfBounds();
     }
 
-    private void MovePlayer()
+    private void MovePlayer(Vector2 direction)
     {
-        // Move the player in the direction that our camera is pointing in
-        var forwardInput = Input.GetAxis("Vertical");
-        var horizontalInput = Input.GetAxis("Horizontal");
-
-        _playerRb.AddForce(_focalPoint.transform.forward * (forwardInput * movementSpeed));
-        _playerRb.AddForce(_focalPoint.transform.right * (horizontalInput * movementSpeed));
+        _playerRb.AddForce(_focalPoint.forward * (direction.y * movementSpeed));
+        _playerRb.AddForce(_focalPoint.right * (direction.x * movementSpeed));
     }
 
     private void UpdatePowerUpIndicatorPosition()
     {
         // The powerUpIndicator follows the player's position
-        powerUpIndicator.position = transform.position + new Vector3(0, -0.5f, 0);
-        powerUpIndicator.Rotate(new Vector3(0, 2, 0));
+        _powerUpIndicator.position = transform.position + new Vector3(0, -0.5f, 0);
+        _powerUpIndicator.Rotate(new Vector3(0, 2, 0));
     }
 
     private void CheckPlayerOutOfBounds()
     {
         // Destroy the player if they fall off the map
-        if (gameManager.isGameActive && transform.position.y < -10)
+        if (_gameManager.isGameActive && transform.position.y < -10)
         {
             gameObject.SetActive(false);
-            gameManager.GameOver();
+            _gameManager.GameOver();
         }
     }
 
@@ -138,17 +174,17 @@ public class PlayerController : MonoBehaviour
             switch (currentPowerUp)
             {
                 case PowerUpType.Pushback:
-                    powerUpIndicatorRenderer.material.SetColor(PowerUpIndicatorColor, Color.yellow);
+                    _powerUpIndicatorRenderer.sharedMaterial.SetColor(_powerUpIndicatorColor, Color.yellow);
                     break;
                 case PowerUpType.Rockets:
-                    powerUpIndicatorRenderer.material.SetColor(PowerUpIndicatorColor, Color.green);
+                    _powerUpIndicatorRenderer.sharedMaterial.SetColor(_powerUpIndicatorColor, Color.green);
                     break;
                 case PowerUpType.Smash:
-                    powerUpIndicatorRenderer.material.SetColor(PowerUpIndicatorColor, Color.magenta);
+                    _powerUpIndicatorRenderer.sharedMaterial.SetColor(_powerUpIndicatorColor, Color.magenta);
                     break;
             }
 
-            powerUpIndicator.gameObject.SetActive(true);
+            _powerUpIndicator.gameObject.SetActive(true);
 
             // Remove the PowerUp from the view
             Destroy(other.gameObject);
@@ -168,7 +204,7 @@ public class PlayerController : MonoBehaviour
         var wait = Helpers.GetWait(7);
         yield return wait;
         currentPowerUp = PowerUpType.None;
-        powerUpIndicator.gameObject.SetActive(false);
+        _powerUpIndicator.gameObject.SetActive(false);
     }
 
     private void LaunchRockets()

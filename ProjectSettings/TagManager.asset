@@ -7,6 +7,15 @@ TagManager:
   - PowerUp
   - Enemy
   - EventManager
+  - PlayerFocalPoint
+  - GameManager
+  - RetryButton
+  - ResumeButton
+  - ScoreText
+  - PauseScreenText
+  - GameOverText
+  - LevelText
+  - Island
   layers:
   - Default
   - TransparentFX
