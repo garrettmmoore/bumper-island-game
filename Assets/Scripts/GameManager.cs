@@ -5,21 +5,19 @@ using Button = UnityEngine.UI.Button;
 
 public class GameManager : MonoBehaviour
 {
-    public int score;
+    [NonSerialized] public int score;
     public bool isGameActive;
+    public bool isSandboxMode;
+    public bool isSandboxModeNoEnemies;
 
     public Button retryButton;
+    public Button resumeButton;
     public TextMeshProUGUI gameOverText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI pauseText;
 
-    public void Start()
-    {
-        StartGame();
-    }
-
-    private void StartGame()
+    public void Awake()
     {
         isGameActive = true;
         scoreText.gameObject.SetActive(true);
@@ -61,6 +59,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        Time.timeScale = 1;
         var scene = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(scene);
     }
@@ -69,11 +68,15 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0;
         pauseText.gameObject.SetActive(true);
+        resumeButton.gameObject.SetActive(true);
+        retryButton.gameObject.SetActive(true);
     }
 
     public void ResumeGame()
     {
         Time.timeScale = 1;
+        resumeButton.gameObject.SetActive(false);
+        retryButton.gameObject.SetActive(false);
         pauseText.gameObject.SetActive(false);
     }
 }
