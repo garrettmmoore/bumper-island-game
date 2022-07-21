@@ -24,21 +24,40 @@ public class SpawnManager : MonoBehaviour
     public void Start()
     {
         _powerUpGemsMaxRange = powerUpPrefabs.Length;
-        SpawnEnemyWave(_waveNumber);
-        SpawnPowerUpGem();
+        if (gameManager.isSandboxMode)
+        {
+            SpawnPowerUpGem(PowerUpType.Pushback);
+            SpawnPowerUpGem(PowerUpType.Rockets);
+            SpawnPowerUpGem(PowerUpType.Smash);
+            SpawnEnemyWave(_waveNumber);
+        }
+        else if (gameManager.isSandboxModeNoEnemies)
+        {
+            SpawnPowerUpGem(PowerUpType.Pushback);
+            SpawnPowerUpGem(PowerUpType.Rockets);
+            SpawnPowerUpGem(PowerUpType.Smash);
+        }
+        else
+        {
+            SpawnEnemyWave(_waveNumber);
+            SpawnPowerUpGem();
+        }
     }
 
     private void FixedUpdate()
     {
-        _enemiesExist = FindObjectOfType(typeof(EnemyController)) != null;
-        if (_enemiesExist) return;
+        if (!gameManager.isSandboxMode && !gameManager.isSandboxModeNoEnemies)
+        {
+            _enemiesExist = FindObjectOfType(typeof(EnemyController)) != null;
+            if (_enemiesExist) return;
 
-        // The number of enemies spawned increases after every wave is defeated
-        _waveNumber++;
-        gameManager.UpdateLevel(_waveNumber);
+            // The number of enemies spawned increases after every wave is defeated
+            _waveNumber++;
+            gameManager.UpdateLevel(_waveNumber);
 
-        SpawnEnemyWave(_waveNumber);
-        SpawnPowerUpGem();
+            SpawnEnemyWave(_waveNumber);
+            SpawnPowerUpGem();
+        }
     }
 
     private void SpawnEnemyWave(int enemiesToSpawn)
@@ -56,14 +75,15 @@ public class SpawnManager : MonoBehaviour
             }
         }
     }
-
-    private void SpawnPowerUpGem()
+    
+    private void SpawnPowerUpGem(PowerUpType powerUpType = PowerUpType.None)
     {
-        var randomPowerUp = Random.Range(0, _powerUpGemsMaxRange);
+        var powerUp = gameManager.isSandboxMode ? (int)powerUpType - 1 : Random.Range(0, _powerUpGemsMaxRange);
+
         Instantiate(
-            powerUpPrefabs[randomPowerUp],
+            powerUpPrefabs[powerUp],
             GenerateRandomSpawnPosition(),
-            powerUpPrefabs[randomPowerUp].transform.rotation
+            powerUpPrefabs[powerUp].transform.rotation
         );
     }
 
