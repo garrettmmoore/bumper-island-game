@@ -164,7 +164,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        var powerUpType = other.gameObject.GetComponent<PowerUp>().powerUpType;
+        PowerUpType powerUpType = other.gameObject.GetComponent<PowerUp>().powerUpType;
 
         // When the player collects a PowerUp, a visual indicator appears
         if (other.CompareTag("PowerUp"))
