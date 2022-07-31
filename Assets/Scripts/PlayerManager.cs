@@ -17,13 +17,11 @@ public class PlayerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        Debug.Log("Enabled");
         _playerInputManager.onPlayerJoined += AddPlayer;
     }
 
     private void OnDisable()
     {
-        Debug.Log("disabled");
         _playerInputManager.onPlayerJoined -= AddPlayer;
     }
 

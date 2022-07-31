@@ -131,6 +131,9 @@ public class PlayerController : MonoBehaviour
     {
         _playerRb.AddForce(_focalPoint.forward * (direction.y * movementSpeed));
         _playerRb.AddForce(_focalPoint.right * (direction.x * movementSpeed));
+
+        // Rotate the focal point of the main camera
+        _focalPoint.Rotate(_focalPoint.up, direction.x * 70f * Time.fixedDeltaTime);
     }
 
     private void UpdatePowerUpIndicatorPosition()

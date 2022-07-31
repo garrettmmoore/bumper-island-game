@@ -90,7 +90,7 @@ public partial class @InputControls : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""2D Vector [Keyboard]"",
                     ""id"": ""0179c853-6541-4261-b534-a7fd31c3f822"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

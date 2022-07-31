@@ -16,6 +16,7 @@ TagManager:
   - GameOverText
   - LevelText
   - Island
+  - PowerUpIndicator
   layers:
   - Default
   - TransparentFX
