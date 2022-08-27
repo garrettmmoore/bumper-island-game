@@ -20,10 +20,16 @@ public class GameManager : MonoBehaviour
 
     public void Awake()
     {
+        Time.timeScale = 0;
+    }
+
+    public void StartGame()
+    {
         isGameActive = true;
         scoreText.gameObject.SetActive(true);
         levelText.gameObject.SetActive(true);
         UpdateLevel(1);
+        Time.timeScale = 1;
     }
 
     // Update score with value from target clicked
