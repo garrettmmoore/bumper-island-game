@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/button-style.uss?fileID=7433441132597879392&amp;guid=41a39ef4c7d774d4a8efc9e58a73bdbf&amp;type=3#button-style" />
+    <ui:VisualElement name="Background" tooltip="Hello monkey" style="flex-grow: 1; background-color: rgba(253, 246, 246, 0.88); height: 660px; width: 531px; border-top-left-radius: 20px; border-bottom-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; align-self: center; align-items: center; justify-content: flex-end; flex-wrap: nowrap; flex-direction: column; margin-bottom: 140px; margin-top: 60px;">
+        <ui:Label tabindex="-1" text="Bumper Island" display-tooltip-when-elided="true" name="title-label" style="-unity-text-align: upper-center; font-size: 70px; position: absolute; top: 60px; -unity-font-style: bold; white-space: normal; justify-content: flex-start; align-items: stretch; -unity-font: url(&apos;project://database/Assets/TextMesh%20Pro/Fonts/LiberationSans.ttf?fileID=12800000&amp;guid=e3265ab4bf004d28a9537516768c1c75&amp;type=3#LiberationSans&apos;);" />
+        <ui:GroupBox style="margin-bottom: 40px;">
+            <ui:Button tabindex="-1" text="Start Game" display-tooltip-when-elided="true" name="start-button" class="button-style" style="margin-top: 4px; margin-bottom: 4px;" />
+            <ui:Button tabindex="-1" text="How to play" display-tooltip-when-elided="true" name="how-to-play-button" class="button-style" />
+        </ui:GroupBox>
+        <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="how-to-play-label" style="font-size: 14px; display: flex; visibility: hidden;" />
+    </ui:VisualElement>
+</ui:UXML>
