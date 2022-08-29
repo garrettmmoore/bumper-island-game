@@ -25,6 +25,7 @@ public class UIController : MonoBehaviour
     // Update is called once per frame
     private void StartButtonPressed()
     {
+        howToPlayLabel.visible = false;
         root.visible = false;
         _gameManager.StartGame();
     }

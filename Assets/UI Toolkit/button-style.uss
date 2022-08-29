@@ -13,7 +13,7 @@
 
 .button-style:hover {
     width: 240px;
-    background-color: rgb(67, 110, 243);
+    background-color: rgb(17, 74, 250);
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     border-top-right-radius: 10px;
