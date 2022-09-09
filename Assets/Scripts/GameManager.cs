@@ -20,7 +20,8 @@ public class GameManager : MonoBehaviour
 
     public void Awake()
     {
-        Time.timeScale = 0;
+        // Time.timeScale = 0;
+        StartGame();
     }
 
     public void StartGame()

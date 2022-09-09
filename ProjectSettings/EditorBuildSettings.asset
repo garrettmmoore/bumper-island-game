@@ -8,5 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Bumper Island.unity
     guid: a4b96ad7a65484fd4a83cb97540eee50
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: 5a829fefba8fd1c4c8df558b6f80974a
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 1b2877a2973fc034d96a492006de8dec, type: 2}

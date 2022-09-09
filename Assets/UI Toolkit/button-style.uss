@@ -26,6 +26,10 @@
     transition-delay: 0.005s;
 }
 
+.button-style:focus {
+    background-color: rgb(157, 17, 250);
+}
+
 .button-style:active {
     width: 240px;
     background-color: rgb(50, 99, 248);

@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
+
 
 public class UIController : MonoBehaviour
 {
@@ -7,19 +9,19 @@ public class UIController : MonoBehaviour
     public Button startButton;
     public Button howToPlayButton;
     public Label howToPlayLabel;
-    private GameManager _gameManager;
 
     // Start is called before the first frame update
     private void Start()
     {
-        _gameManager = FindObjectOfType<GameManager>();
         root = GetComponent<UIDocument>().rootVisualElement;
         startButton = root.Q<Button>("start-button");
+        startButton.Focus();
+        startButton.Focus();
         howToPlayButton = root.Q<Button>("how-to-play-button");
         howToPlayLabel = root.Q<Label>("how-to-play-label");
-
         startButton.clicked += StartButtonPressed;
         howToPlayButton.clicked += HowToPlayButtonPressed;
+        Debug.Log(root.focusController);
     }
 
     // Update is called once per frame
@@ -27,7 +29,7 @@ public class UIController : MonoBehaviour
     {
         howToPlayLabel.visible = false;
         root.visible = false;
-        _gameManager.StartGame();
+        SceneManager.LoadScene(0);
     }
 
     private void HowToPlayButtonPressed()
